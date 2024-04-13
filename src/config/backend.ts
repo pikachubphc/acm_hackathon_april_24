@@ -1,6 +1,8 @@
 import SuperTokens from "supertokens-node";
 import ThirdPartyNode from "supertokens-node/recipe/thirdparty";
 import { TypeInput } from "supertokens-node/types";
+import SessionNode from "supertokens-node/recipe/session";
+import UserMetadata from "supertokens-node/recipe/usermetadata";
 import { appInfo } from "./appInfo";
 
 export const backendConfig = (): TypeInput => {
@@ -13,6 +15,43 @@ export const backendConfig = (): TypeInput => {
     appInfo,
     recipeList: [
       ThirdPartyNode.init({
+        override: {
+          functions: (originalImplementation) => {
+            return {
+              ...originalImplementation,
+              // override the thirdparty sign in / up API
+              signInUp: async function (input) {
+                // TODO: Some pre sign in / up logic
+
+                let response = await originalImplementation.signInUp(input);
+
+                if (response.status === "OK") {
+                  // This is the response from the OAuth tokens provided by the third party provider
+                  let accessToken = response.oAuthTokens["access_token"];
+                  // other tokens like the refresh_token or id_token are also
+                  // available in the oAuthTokens object.
+                  let uid = response.user.id;
+                  // This gives the user's info as returned by the provider's user profile endpoint
+                  // This gives the user's info from the returned ID token
+                  // if the provider gave us an ID token
+                  let name =
+                  response.rawUserInfoFromProvider.fromUserInfoAPI![
+                    "name"
+                  ];
+                  let avatar = response.rawUserInfoFromProvider.fromUserInfoAPI![
+                    "picture"
+                  ];
+                  await UserMetadata.updateUserMetadata(uid, {
+                    name,
+                    avatar
+                  });
+                }
+
+                return response;
+              },
+            };
+          },
+        },
         signInAndUpFeature: {
           providers: [
             {
@@ -22,13 +61,16 @@ export const backendConfig = (): TypeInput => {
                   {
                     clientId: process.env.NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID!,
                     clientSecret: process.env.GOOGLE_OAUTH_SECRET!,
+                    scope: ["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email"]
                   },
+
                 ],
               },
             },
           ],
         },
       }),
+      SessionNode.init(),
     ],
     isInServerlessEnv: true,
   };
