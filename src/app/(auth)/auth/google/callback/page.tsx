@@ -45,7 +45,7 @@ async function handleGoogleCallback() {
   return { isError, errorTitle, errorDescription };
 }
 
-export default () => {
+const CallbackPage = () => {
   useEffect(() => {
     handleGoogleCallback().then((res) => {
       const urlParams = new URLSearchParams();
@@ -65,3 +65,5 @@ export default () => {
     </div>
   );
 };
+
+export default CallbackPage;
