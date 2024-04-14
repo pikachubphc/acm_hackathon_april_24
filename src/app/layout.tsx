@@ -3,12 +3,13 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { SuperTokensProvider } from "@/components/supertokensProvider";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "plura",
-  description: "learning project",
+  title: "BitsAI",
+  description: "Your own college AI assistant",
 };
 
 export default function RootLayout({
@@ -21,11 +22,14 @@ export default function RootLayout({
       <SuperTokensProvider>
         <body
           className={cn(
-            "min-h-screen bg-background font-sans antialiased",
+            "m-0 flex min-h-screen flex-col items-center bg-background p-0 font-sans antialiased",
             inter.variable
           )}
         >
-          {children}
+          <div className="flex w-full max-w-7xl flex-col gap-4">
+            {children}
+            <Toaster />
+          </div>
         </body>
       </SuperTokensProvider>
     </html>

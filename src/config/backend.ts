@@ -33,8 +33,12 @@ export const backendConfig = (): TypeInput => {
                   // This gives the user's info as returned by the provider's user profile endpoint
                   // This gives the user's info from the returned ID token
                   // if the provider gave us an ID token
-                  let name = response.rawUserInfoFromProvider.fromUserInfoAPI!["name"];
-                  let avatar = response.rawUserInfoFromProvider.fromUserInfoAPI!["picture"];
+                  let name =
+                    response.rawUserInfoFromProvider.fromUserInfoAPI!["name"];
+                  let avatar =
+                    response.rawUserInfoFromProvider.fromUserInfoAPI![
+                      "picture"
+                    ];
                   console.log("User info", name, avatar);
                   console.log("User ID", uid);
                   await UserMetadata.updateUserMetadata(uid, { name, avatar });
@@ -68,7 +72,10 @@ export const backendConfig = (): TypeInput => {
                   {
                     clientId: process.env.NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID!,
                     clientSecret: process.env.GOOGLE_OAUTH_SECRET!,
-                    scope: ["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email"],
+                    scope: [
+                      "https://www.googleapis.com/auth/userinfo.profile",
+                      "https://www.googleapis.com/auth/userinfo.email",
+                    ],
                   },
                 ],
               },
